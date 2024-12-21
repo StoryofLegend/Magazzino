@@ -1,0 +1,134 @@
+{
+    "Categoria": [
+        {
+            "id_categoria": 1,
+            "nome_categoria": "Monitor"
+        },
+        {
+            "id_categoria": 2,
+            "nome_categoria": "TV"
+        },
+        {
+            "id_categoria": 3,
+            "nome_categoria": "Tastiera"
+        },
+        {
+            "id_categoria": 4,
+            "nome_categoria": "Smartphone"
+        },
+        {
+            "id_categoria": 5,
+            "nome_categoria": "Laptop"
+        },
+        {
+            "id_categoria": 6,
+            "nome_categoria": "Mouse"
+        },
+        {
+            "id_categoria": 7,
+            "nome_categoria": "Stampante"
+        },
+        {
+            "id_categoria": 8,
+            "nome_categoria": "Cuffie"
+        },
+        {
+            "id_categoria": 9,
+            "nome_categoria": "Webcam"
+        },
+        {
+            "id_categoria": 10,
+            "nome_categoria": "Cavi"
+        },
+        {
+            "id_categoria": 11,
+            "nome_categoria": "Orologi Smart"
+        }
+    ],
+    "Prodotto": [
+        {
+            "id_prodotto": 1,
+            "id_categoria": 1,
+            "nome_prodotto": "LG 34WN650",
+            "prezzo": 385.875
+        },
+        {
+            "id_prodotto": 2,
+            "id_categoria": 4,
+            "nome_prodotto": "Samsung galaxy S8",
+            "prezzo": 385
+        },
+        {
+            "id_prodotto": 3,
+            "id_categoria": 4,
+            "nome_prodotto": "Iphone 11",
+            "prezzo": 792
+        },
+        {
+            "id_prodotto": 4,
+            "id_categoria": 4,
+            "nome_prodotto": "Iphone 12",
+            "prezzo": 1089
+        },
+        {
+            "id_prodotto": 5,
+            "id_categoria": 2,
+            "nome_prodotto": "Samsung TV",
+            "prezzo": 440
+        },
+        {
+            "id_prodotto": 6,
+            "id_categoria": 6,
+            "nome_prodotto": "Logitech G502",
+            "prezzo": 60
+        },
+        {
+            "id_prodotto": 7,
+            "id_categoria": 7,
+            "nome_prodotto": "HP LaserJet Pro M15a",
+            "prezzo": 200
+        },
+        {
+            "id_prodotto": 8,
+            "id_categoria": 8,
+            "nome_prodotto": "Razer Thresher 7.1",
+            "prezzo": 170
+        },
+        {
+            "id_prodotto": 9,
+            "id_categoria": 5,
+            "nome_prodotto": "HP - Gaming OMEN 15-dh1002nl",
+            "prezzo": 1900
+        },
+        {
+            "id_prodotto": 10,
+            "id_categoria": 1,
+            "nome_prodotto": "Samsung C49HG90",
+            "prezzo": 1653.75
+        },
+        {
+            "id_prodotto": 11,
+            "id_categoria": 3,
+            "nome_prodotto": "Logitech G213",
+            "prezzo": 82
+        },
+        {
+            "id_prodotto": 12,
+            "id_categoria": 9,
+            "nome_prodotto": "AUKEY Webcam 1080p",
+            "prezzo": 55
+        },
+        {
+            "id_prodotto": 13,
+            "id_categoria": 10,
+            "nome_prodotto": "Cavo USB",
+            "prezzo": 6.05
+        },
+        {
+            "id_prodotto": 14,
+            "id_categoria": 10,
+            "nome_prodotto": "Cavo HDMI",
+            "prezzo": 9.680000000000001
+        }
+    ]
+}

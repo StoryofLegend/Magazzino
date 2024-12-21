@@ -1,0 +1,50 @@
+{
+  "name": "magazzino",
+  "version": "1.0.0",
+  "description": "Gestione magazzino",
+  "main": "Magazzino.js",
+  "dependencies": {
+    "colors": "^1.4.0",
+    "documentation": "^14.0.3",
+    "fs": "^0.0.1-security",
+    "inquirer": "^7.3.3"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.26.0",
+    "@babel/preset-env": "^7.26.0",
+    "@eslint/js": "^9.16.0",
+    "babel-loader": "^9.2.1",
+    "copy-webpack-plugin": "^12.0.2",
+    "eslint": "^9.16.0",
+    "flow-bin": "^0.255.0",
+    "globals": "^15.13.0",
+    "jalangi2": "^0.2.6",
+    "jest": "^29.7.0",
+    "jest-json-reporter": "^1.2.2",
+    "jest-junit": "^16.0.0",
+    "webpack": "^5.97.1",
+    "webpack-cli": "^5.1.4"
+  },
+  "scripts": {
+    "start": "node Magazzino.js",
+    "flow": "flow",
+    "test": "jest",
+    "build": "webpack --config webpack.config.js",
+    "docs": "documentation build Magazzino.js -f html -o public"
+  },
+  "jest": {
+    "testResultsProcessor": "jest-json-reporter",
+    "reporters": [
+      "default",
+      [
+        "jest-junit",
+        {
+          "outputDirectory": "reports/junit",
+          "outputName": "junit.xml"
+        }
+      ]
+    ]
+  },
+  "author": "",
+  "license": "ISC"
+}

@@ -1,0 +1,186 @@
+# .gitlab-ci.yml
+
+image: node:latest
+
+variables:
+  DOCKER_HOST: tcp://docker:2375
+  DOCKER_DRIVER: overlay2
+  CONTAINER_IMAGE: $CI_REGISTRY_IMAGE
+
+cache:
+  key: "$CI_COMMIT_REF_NAME" # Chiave unica per il commit
+  paths:
+    - node_modules/
+
+# Definiamo gli stage
+stages:
+  - build
+  - verify
+  - test
+  - package
+  - release
+  - docs
+
+compile:
+  stage: build
+  script:
+    # Installiamo solo le dipendenze fondamentali per il progetto
+    - npm install --only=production 
+   
+lint:
+  stage: verify
+  script:
+    - npm install eslint
+    # Eseguiamo ESLint solo su Magazzino.js e generiamo un report in formato Json
+    - npx eslint Magazzino.js -f json -o eslint-report.json 
+  # Ignoriamo il fallimento di Eslint per continuare con 
+  # la pipeline ed in seguito visualizzare i warning
+  allow_failure: true 
+  # Gli artefatti salvati nei job precedenti non sono necessari
+  dependencies: []  
+  # Salviamo il report di Eslint come artefatto   
+  artifacts:
+    paths:
+      - eslint-report.json 
+    when: on_failure 
+  # disabilitiamo la cache in questo job (non necessita le dipendenze di progetto)
+  cache: {}            
+
+
+flow:
+  stage: verify
+  script:
+    - npm install flow-bin
+    # Eseguiamo Flow solo su Magazzino.js e salviamo il report in formato JSON
+    - npx flow check Magazzino.js --json > flow-report.json  
+  # Ignoriamo il fallimento di Flow per continuare con la 
+  # pipeline ed in seguito visualizzare i warning
+  allow_failure: true 
+  # Gli artefatti salvati nei job precedenti non sono necessari
+  dependencies: []  
+  # Salviamo il report JSON come artefatto    
+  artifacts:
+    paths:
+      - flow-report.json 
+    when: on_failure
+    # Impediamo al job di scrivere sulla cache in quanto
+    # il package flow-bin non serve agli altri job
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    paths:
+      - node_modules/
+    policy: pull 
+
+
+unit-test:
+  stage: test
+  # installiamo jest e dei plug-in per permettere il salvataggio dei report
+  script:
+    - npm install jest                            
+    - npm install --save-dev jest-json-reporter
+    - npm install --save-dev jest-junit
+    # eseguiamo i test sul file Magazzino.js e salviamo i risultati in formato .json
+    - npm test __test__/Magazzino.test.js -- --json --outputFile=reports/test-results.json 
+  # Facciamo override della cache globale e salviamo le 
+  # dipendenze jest scaricate in una seconda cache dedicata ai test 
+  cache:
+    key: "$CI_COMMIT_REF_NAME-tests"
+    paths:
+      - node_modules/
+    policy: push 
+  # Gli artefatti salvati nei job precedenti non sono necessari
+  dependencies: []
+  # Salviamo i risultati nella cartella reports come artefatto      
+  artifacts:
+    paths:
+      - reports/test-results.json   # formato .JSON
+      - reports/junit/junit.xml     # formato .xml
+    when: on_failure
+
+
+
+integration-test:
+  stage: test
+  # Facciamo in modo che integration-test venga eseguito
+  # solo in caso di successo di unit-test
+  needs:
+    - unit-test
+  script:
+    # eseguiamo i test sul file Magazzino.js e 
+    # salviamo i risultati in formato .json
+    - npm test __test__/integration_test.test.js -- --json --outputFile=reports/integration-results.json
+  # Leggiamo la cache specifica dei test
+  cache:
+    key: "$CI_COMMIT_REF_NAME-tests"
+    paths:
+      - node_modules/
+    policy: pull 
+  # Gli artefatti salvati nei job precedenti non sono necessari
+  dependencies: []  
+  # Salviamo i risultati nella cartella reports come artefatto    
+  artifacts:
+    paths:
+      - reports/integration-results.json     # formato .JSON
+      - reports/junit/junit.xml              # formato .xml
+    when: on_failure
+  
+
+webpack:
+  stage: package
+  script:
+  # Installiamo webpack per creare il package
+    - npm install --save-dev webpack webpack-cli   
+     # Installiamo Babel per utilizzarlo nel file webpack.config.js   
+    - npm install --save-dev babel-loader @babel/core @babel/preset-env  
+    - npm install copy-webpack-plugin --save-dev
+    # Eseguiamo lo script di build definito in Package.json
+    - npm run build 
+  # Gli artefatti salvati nei job precedenti non sono necessari
+  dependencies: []  
+  # Salviamo il bundle nella directory dist/ come artefatto   
+  artifacts:
+    paths:
+      - dist/                         
+    when: on_success
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    paths:
+      - node_modules/
+    policy: pull  
+
+
+docker-image:
+  stage: release
+  # utilizziamo l'ultima versione di docker stabile
+  image: docker:stable
+  services:
+    - docker:dind
+  # disabilitiamo la cache in questo job (non necessita le dipendenze di progetto)
+  cache: {}   
+  # dichiariamo la dipendenza dal job webpack per poter utilizzare l'artefatto /dist         
+  dependencies:
+    - webpack
+  script:
+    # login al Container registry
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+    # scarichiamo l'immagine se già esiste
+    - docker pull $CONTAINER_IMAGE:$CI_COMMIT_REF_NAME || true
+    # costruiamo la nuova immagine (sfruttando la cache di quella precedente se esiste)
+    - docker build --cache-from $CONTAINER_IMAGE:$CI_COMMIT_REF_NAME -t $CONTAINER_IMAGE:$CI_COMMIT_REF_NAME .
+    # carichiamo la nuova immagine sul Container Registry con lo stesso nome della precedente
+    - docker push $CONTAINER_IMAGE:$CI_COMMIT_REF_NAME
+
+
+pages:
+  stage: docs
+  script:
+    - npm install --save-dev documentation
+    - npm run docs
+  # Gli artefatti salvati nei job precedenti non sono necessari
+  dependencies: []      
+  artifacts:
+    paths:
+      - public
+  # disabilitiamo la cache in questo job (non necessita le dipendenze di progetto)
+  cache: {}            
+

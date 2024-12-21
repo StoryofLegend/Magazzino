@@ -1,0 +1,23 @@
+{
+    "users": [{
+            "username": "kristian",
+            "password": "123456"
+        },
+        {
+            "username": "lorenzo",
+            "password": "qwerty"
+        },
+        {
+            "username": "Walter White",
+            "password": "Meth123"
+        },
+        {
+            "username": "Elon Musk",
+            "password": "X Æ A-12"
+        },
+        {
+            "username": "Elon Musk",
+            "password": "X Æ A-12"
+        }
+    ]
+}
